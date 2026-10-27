@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 Route::prefix('v1')->group(function () {
 
@@ -12,10 +13,27 @@ Route::prefix('v1')->group(function () {
         ]);
     })->name('health');
 
-    Route::post('/login', function () {
-        return response()->json([
-            'message' => 'Endpoint de login funcionando'
-        ]);
-    });
+      Route::post('/login', function (Illuminate\Http\Request $request) {
+      $datos = $request->validate([
+          'email' => 'required|email',
+          'password' => 'required|string',
+      ]);
+
+      $usuario = User::where('email', $datos['email'])->first();
+
+      if (!$usuario || !\Illuminate\Support\Facades\Hash::check($datos['password'], $usuario->password)) {
+          return response()->json([
+              'message' => 'Correo o contraseña incorrectos'
+          ], 401);
+      }
+
+      $token = $usuario->createToken('auth_token')->plainTextToken;
+
+      return response()->json([
+          'message' => 'Inicio de sesión exitoso',
+          'user' => $usuario,
+          'token' => $token,
+      ]);
+  });
 
 });
