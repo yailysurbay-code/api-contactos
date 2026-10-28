@@ -1,39 +1,18 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\HealthController;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
 
 Route::prefix('v1')->group(function () {
+    Route::get('/health', HealthController::class)->name('health');
 
-    Route::get('/health', function () {
-        return response()->json([
-            'status' => 'ok',
-            'app' => config('app.name'),
-            'version' => '0.1.0'
-        ]);
-    })->name('health');
+    Route::post('/auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('auth.login');
 
-      Route::post('/login', function (Illuminate\Http\Request $request) {
-      $datos = $request->validate([
-          'email' => 'required|email',
-          'password' => 'required|string',
-      ]);
-
-      $usuario = User::where('email', $datos['email'])->first();
-
-      if (!$usuario || !\Illuminate\Support\Facades\Hash::check($datos['password'], $usuario->password)) {
-          return response()->json([
-              'message' => 'Correo o contraseña incorrectos'
-          ], 401);
-      }
-
-      $token = $usuario->createToken('auth_token')->plainTextToken;
-
-      return response()->json([
-          'message' => 'Inicio de sesión exitoso',
-          'user' => $usuario,
-          'token' => $token,
-      ]);
-  });
-
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
+        Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    });
 });
