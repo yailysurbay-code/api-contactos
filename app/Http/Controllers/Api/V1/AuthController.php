@@ -7,6 +7,8 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -38,5 +40,23 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => new UserResource($user),
         ]);
+    }
+
+    /**
+     * Perfil del usuario autenticado.
+     */
+    public function me(Request $request): UserResource
+    {
+        return new UserResource($request->user());
+    }
+
+    /**
+     * Cierra la sesión y revoca el token actual.
+     */
+    public function logout(Request $request): Response
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->noContent();
     }
 }
