@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Contact;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ContactSeeder extends Seeder
 {
@@ -12,7 +12,7 @@ class ContactSeeder extends Seeder
     {
         $user = User::where('email', 'yailys@example.com')->first();
 
-        if (!$user) {
+        if (! $user) {
             return;
         }
 

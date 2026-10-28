@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('avatar')->nullable();
 
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->cascadeOnDelete();
+                ->constrained('users')
+                ->cascadeOnDelete();
 
             $table->timestamps();
         });
