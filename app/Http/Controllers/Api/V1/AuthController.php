@@ -29,10 +29,6 @@ class AuthController extends Controller
             ]);
         }
 
-        if (! $user->is_active) {
-            abort(403, 'La cuenta está desactivada.');
-        }
-
         $token = $user->createToken($request->validated('device_name'))->plainTextToken;
 
         return response()->json([
