@@ -47,9 +47,15 @@ class ContactController extends Controller
    /**
      * Muestra el recurso especificado.
      */
-    public function show(string $id)
+    public function show( Request $request ,string $id)
     {
-        //
+       $contacto = Contact::where('user_id', $request->user()->id)->findOrFail($id);
+       $contacto->avatar = $contacto->avatar ? url(Storage::url($contacto->avatar)):null;
+       return response()->json(['mensaje' => 'Contacto encontrado correctamente',
+            'datos' => $contacto
+        ], 200);
+
+
     }
 
     /**
