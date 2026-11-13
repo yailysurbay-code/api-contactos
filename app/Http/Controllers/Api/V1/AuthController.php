@@ -37,6 +37,33 @@ class AuthController extends Controller
             'user' => new UserResource($user),
         ]);
     }
+    /**
+ * Registra un nuevo usuario.
+ */
+public function register(Request $request): JsonResponse
+    {
+        $datos = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'device_name' => 'required|string|max:255',
+        ]);
+
+        $user = User::create([
+            'name' => $datos['name'],
+            'email' => $datos['email'],
+            'password' => Hash::make($datos['password']),
+        ]);
+
+        $token = $user->createToken($datos['device_name'])->plainTextToken;
+
+        return response()->json([
+            'mensaje' => 'Usuario registrado correctamente',
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'user' => new UserResource($user),
+        ], 201);
+    }
 
     /**
      * Perfil del usuario autenticado.
@@ -56,3 +83,4 @@ class AuthController extends Controller
         return response()->noContent();
     }
 }
+
