@@ -14,11 +14,33 @@ class ContactController extends Controller
      */
     public function index(Request $request)
     {
-        $contactos = Contact::where('user_id',$request->user()->id)->get();
-        foreach($contactos as $contacto){
-            $contacto->avatar = $contacto->avatar ? url(Storage::url($contacto->avatar)):null;
+        $contactos = Contact::where('user_id', $request->user()->id)->get();
+
+        foreach ($contactos as $contacto) {
+            $contacto->avatar = $contacto->avatar
+                ? url(Storage::url($contacto->avatar))
+                : null;
         }
-        return response()->json(['mensaje' => 'Lista De Contactos','datos' => $contacto],201);
+
+        return response()->json([
+            'mensaje' => 'Lista de contactos',
+            'datos' => $contactos
+        ], 200);
+    }
+    public function todos()
+    {
+        $contactos = Contact::withTrashed()->get();
+
+        foreach ($contactos as $contacto) {
+            $contacto->avatar = $contacto->avatar
+                ? url(Storage::url($contacto->avatar))
+                : null;
+        }
+
+        return response()->json([
+            'mensaje' => 'Lista de todos los contactos',
+            'datos' => $contactos
+        ], 200);
     }
 
     /**
