@@ -29,7 +29,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $token = $user->createToken($request->validated('device_name'))->plainTextToken;
+        $token = $user->createToken($request->validated('password'))->plainTextToken;
 
         return response()->json([
             'token' => $token,
@@ -46,7 +46,7 @@ public function register(Request $request): JsonResponse
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'device_name' => 'required|string|max:255',
+           
         ]);
 
         $user = User::create([
@@ -55,7 +55,7 @@ public function register(Request $request): JsonResponse
             'password' => Hash::make($datos['password']),
         ]);
 
-        $token = $user->createToken($datos['device_name'])->plainTextToken;
+        $token = $user->createToken($datos['password'])->plainTextToken;
 
         return response()->json([
             'mensaje' => 'Usuario registrado correctamente',
